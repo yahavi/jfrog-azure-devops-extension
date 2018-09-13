@@ -13,7 +13,7 @@
     "version": {
         "Major": "1",
         "Minor": "1",
-        "Patch": "27"
+        "Patch": "24"
     },
     "minimumAgentVersion": "1.83.0",
     "instanceNameFormat": "Artifactory Generic Upload",
