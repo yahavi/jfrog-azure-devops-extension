@@ -1,0 +1,22 @@
+{
+    "name": "artifactory-vsts-extension",
+    "version": "1.0.0",
+    "author": "JFrog",
+    "license": "Apache-2.0",
+    "dependencies": {
+        "rimraf": "^2.6.2",
+        "tfx-cli": "^0.5.14",
+        "edit-json-file": "^1.1.0",
+        "command-line-args": "^5.0.2",
+        "command-line-usage": "^5.0.5",
+        "simple-git": "^1.96.0",
+        "compare-versions": "^3.4.0",
+        "assert": "^1.4.1"
+    },
+    "scripts": {
+        "install": "node buildScripts/build.js",
+        "release": "node buildScripts/release.js",
+        "create": "npm i && tfx extension create",
+        "test": "npm i && npm t --prefix=tests"
+    }
+}
