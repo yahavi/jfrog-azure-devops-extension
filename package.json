@@ -8,7 +8,9 @@
         "tfx-cli": "^0.5.14"
     },
     "scripts": {
-        "install": "node build.js",
+        "preinstall": "npm i --prefix=buildScripts",
+        "install": "node buildScripts/build.js",
+        "release": "node buildScripts/release.js",
         "create": "npm i && tfx extension create",
         "test": "npm i && npm t --prefix=tests"
     }
