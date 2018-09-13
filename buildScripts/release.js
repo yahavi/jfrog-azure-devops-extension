@@ -1,21 +1,25 @@
 const fs = require('fs');
 const path = require('path');
+const assert = require('assert');
 const commandLineArgs = require('command-line-args');
 const commandLineUsage = require('command-line-usage');
 const editJsonFile = require('edit-json-file');
+const simpleGit = require('simple-git');
+const compareVersions = require('compare-versions');
 const editJsonFileOptions = {autosave: true, stringify_width: 4};
+const githubRepo = 'github.com/yahavi/artifactory-vsts-extension.git';
 
 const optionDefinitions = [
     {name: 'help', alias: 'h', type: Boolean, description: 'Display this usage guide.'},
-    {name: 'git-username', type: String, description: 'Github username'},
-    {name: 'git-password', type: String, description: 'Github password'},
-    {name: 'major', type: String, description: 'Extension major to set'},
-    {name: 'minor', type: String, description: 'Extension minor to set'},
-    {name: 'patch', type: String, description: 'Extension patch to set'}
+    {name: 'version', alias: 'v', type: String, description: 'Version to set. Format: X.X.X'},
+    {name: 'github-username', type: String, description: 'Github username', defaultValue: process.env.VSTS_GITHUB_USERNAME},
+    {name: 'github-password', type: String, description: 'Github password', defaultValue: process.env.VSTS_GITHUB_PASSWORD},
+    {name: 'commit-changes', type: Boolean, description: 'Set to true if you want to commit the changes and create a new tag', defaultValue: false}
 ];
 
-const commandLineArgsOptions = commandLineArgs(optionDefinitions);
-if (commandLineArgsOptions.help || !(commandLineArgsOptions.major && commandLineArgsOptions.minor && commandLineArgsOptions.patch)) {
+const commandLineArgsOptions = commandLineArgs(optionDefinitions, {camelCase: true});
+if (commandLineArgsOptions.help ||
+    !(commandLineArgsOptions.version && commandLineArgsOptions.githubUsername && commandLineArgsOptions.githubPassword)) {
     const usage = commandLineUsage([
         {
             header: 'Release Artifactory VSTS extension',
@@ -24,46 +28,59 @@ if (commandLineArgsOptions.help || !(commandLineArgsOptions.major && commandLine
         {
             header: 'Options',
             optionList: optionDefinitions
-        },
-        {
-            content: 'Project home: {underline https://github.com/jfrog/artifactory-vsts-extension}'
         }
     ]);
     console.log(usage);
-    process.exit(1);
-} else {
-    console.log(commandLineArgsOptions)
+    process.exit(commandLineArgsOptions.help ? 0 : 1);
 }
-const version = commandLineArgsOptions.major + "." + commandLineArgsOptions.minor + "." + commandLineArgsOptions.patch;
+let splitVersion = commandLineArgsOptions.version.split('.');
 
+assertVersion();
 updateTasks();
 updateVssExtension();
+commitAndPush();
+console.log("Succeed");
 
-
+function assertVersion() {
+    assert.equal(splitVersion.length, 3, 'Version must be of format X.X.X');
+    let vssExtension = fs.readFileSync('vss-extension.json', 'utf8');
+    let vssExtensionJson = JSON.parse(vssExtension);
+    assert.equal(compareVersions(commandLineArgsOptions.version, vssExtensionJson.version), 1, 'Input version must be bigger than current version');
+}
 
 function updateTasks() {
-    fs.readdir(path.join('..', 'tasks'), (err, files) => {
-        files.forEach(taskName => {
-            let taskDir = path.join('..', 'tasks', taskName);
-            let taskJsonPath = path.join(taskDir, "task.json");
-            let taskJson = editJsonFile(taskJsonPath, editJsonFileOptions);
-            taskJson.set('version', {
-                "Major": commandLineArgsOptions.major,
-                "Minor": commandLineArgsOptions.minor,
-                "Patch": commandLineArgsOptions.patch
-            });
-            require('simple-git')().add(taskJsonPath);
+    let files = fs.readdirSync(path.join('tasks'));
+    files.forEach(taskName => {
+        console.log("Updating " + taskName);
+        let taskDir = path.join('tasks', taskName);
+        let taskJsonPath = path.join(taskDir, "task.json");
+        let taskJson = editJsonFile(taskJsonPath, editJsonFileOptions);
+        taskJson.set('version', {
+            "Major": splitVersion[0],
+            "Minor": splitVersion[1],
+            "Patch": splitVersion[2]
         });
+        simpleGit().add(taskJsonPath);
     });
 }
 
 function updateVssExtension() {
-    let vssExtensionJsonPath = path.join('..', 'vss-extension.json');
-    let vssExtensionJson = editJsonFile(vssExtensionJsonPath, editJsonFileOptions);
-    vssExtensionJson.set('version', version);
-    require('simple-git')().add(vssExtensionJsonPath);
+    console.log("Updating vss-extension.json");
+    let vssExtensionJson = editJsonFile('vss-extension.json', editJsonFileOptions);
+    vssExtensionJson.set('version', commandLineArgsOptions.version);
+    simpleGit().add('vss-extension.json');
 }
 
-
-
-require('simple-git')().commit('Bumped version to ' + version).push();
+function commitAndPush() {
+    if (commandLineArgsOptions.commitChanges) {
+        console.log("Creating tag and pushing to Github");
+        simpleGit()
+            .outputHandler((command, stdout, stderr) => {
+                stdout.pipe(process.stdout);
+                stderr.pipe(process.stderr);
+            })
+            .commit('Bumped version to ' + commandLineArgsOptions.version)
+            .tag([commandLineArgsOptions.version])
+            .push(['https://' + commandLineArgsOptions.githubUsername + ':' + commandLineArgsOptions.githubPassword + '@' + githubRepo, 'tests-branch', '--tags']);
+    }
+}

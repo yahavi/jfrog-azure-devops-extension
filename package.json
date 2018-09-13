@@ -5,16 +5,13 @@
     "license": "Apache-2.0",
     "dependencies": {
         "rimraf": "^2.6.2",
-        "tfx-cli": "^0.5.14",
-        "edit-json-file": "^1.1.0",
-        "command-line-args": "^5.0.2",
-        "command-line-usage": "^5.0.5",
-        "simple-git": "^1.96.0"
+        "tfx-cli": "^0.5.14"
     },
     "scripts": {
+        "preinstall": "npm i --prefix=buildScripts",
         "install": "node buildScripts/build.js",
+        "release": "node buildScripts/release.js",
         "create": "npm i && tfx extension create",
-        "test": "npm i && npm t --prefix=tests",
-        "release": "npm buildScripts/release.js"
+        "test": "npm i && npm t --prefix=tests"
     }
 }
