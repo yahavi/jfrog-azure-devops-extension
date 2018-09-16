@@ -47,9 +47,7 @@ let filesToCommit = [];
 assertVersion();
 updateTasks();
 updateVssExtension();
-commitAndPush().then(() => {
-    console.log('Succeed');
-});
+commitAndPush();
 
 function assertVersion() {
     assert.equal(splitVersion.length, 3, 'Version must be of format X.X.X');
@@ -81,13 +79,14 @@ function updateVssExtension() {
     filesToCommit.push('vss-extension.json');
 }
 
-async function commitAndPush() {
+function commitAndPush() {
     if (commitChanges()) {
         console.log('Creating tag ' + commandLineArgsOptions.version + ' and pushing to Github');
-        await simpleGit
+        simpleGit
             .commit('Bumped version to ' + commandLineArgsOptions.version, filesToCommit)
             .tag([commandLineArgsOptions.version])
-            .push(['https://' + commandLineArgsOptions.githubUsername + ':' + commandLineArgsOptions.githubPassword + '@' + githubRepo, 'master', '--tags']);
+            .push(['https://' + commandLineArgsOptions.githubUsername + ':' + commandLineArgsOptions.githubPassword + '@' + githubRepo, 'master', '--tags'])
+            .exec(() => { console.log('Push success'); });
     }
 }
 
