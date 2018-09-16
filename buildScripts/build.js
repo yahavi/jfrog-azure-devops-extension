@@ -5,7 +5,7 @@ const path = require('path');
 
 cleanExecNpm('pack', 'artifactory-tasks-utils');
 installTasks();
-cleanExecNpm(('i'), 'tests');
+cleanExecNpm('i', 'tests');
 
 /**
  * Install tasks.
@@ -14,7 +14,10 @@ function installTasks() {
     fs.readdir('tasks', (err, files) => {
         files.forEach(taskName => {
             let taskDir = path.join('tasks', taskName);
-            cleanExecNpm('i', taskDir);
+            // If a package.json is missing, npm will exec the install command on the parent folder. This will cause an endless install loop.
+            if (fs.existsSync(path.join(taskDir, "package.json"))) {
+                cleanExecNpm('i', taskDir);
+            }
         });
     });
 }
