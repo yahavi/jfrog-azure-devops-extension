@@ -16,7 +16,7 @@ const simpleGit = require('simple-git')()
 const optionDefinitions = [
     {name: 'help', alias: 'h', type: Boolean, description: 'Display this usage guide'},
     {name: 'version', alias: 'v', type: String, description: 'Version to set. Must be bigger than the current version. Format: X.X.X'},
-    {name: 'commit-changes', type: Boolean, description: 'Set to true if you want to commit the changes and create a new tag', defaultValue: false},
+    {name: 'commit-changes', type: Boolean, description: 'Set to true if you wish to commit the changes and create a new tag', defaultValue: false},
     {name: 'github-username', type: String, description: 'Github username', defaultValue: process.env.VSTS_GITHUB_USERNAME},
     {name: 'github-password', type: String, description: 'Github password', defaultValue: process.env.VSTS_GITHUB_PASSWORD}
 ];
@@ -85,7 +85,7 @@ function commitAndPush() {
         simpleGit
             .commit('Bumped version to ' + commandLineArgsOptions.version, filesToCommit)
             .tag([commandLineArgsOptions.version])
-            .push(['https://' + commandLineArgsOptions.githubUsername + ':' + commandLineArgsOptions.githubPassword + '@' + githubRepo, 'master', '--tags'])
+            .push(['https://' + commandLineArgsOptions.githubUsername + ':' + commandLineArgsOptions.githubPassword + '@' + githubRepo, 'master'])
             .exec(() => { console.log('Push success'); });
     }
 }
