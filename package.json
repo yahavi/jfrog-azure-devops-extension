@@ -10,7 +10,7 @@
     "scripts": {
         "preinstall": "npm i --prefix=buildScripts",
         "install": "node buildScripts/build.js",
-        "release": "node buildScripts/release.js",
+        "release": "npm i && node buildScripts/release.js",
         "create": "npm i && tfx extension create",
         "test": "npm i && npm t --prefix=tests"
     }
