@@ -37,7 +37,7 @@ const usage = commandLineUsage([
 
 const commandLineArgsOptions = commandLineArgs(optionDefinitions, {camelCase: true});
 if (commandLineArgsOptions.help || !commandLineArgsOptions.version ||
-    !(commandLineArgsOptions.commitChanges && commandLineArgsOptions.githubUsername && commandLineArgsOptions.githubPassword)) {
+    commandLineArgsOptions.commitChanges && !(commandLineArgsOptions.githubUsername && commandLineArgsOptions.githubPassword)) {
     console.log(usage);
     process.exit(commandLineArgsOptions.help ? 0 : 1);
 }
