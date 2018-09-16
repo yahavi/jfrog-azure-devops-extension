@@ -6,7 +6,7 @@ const commandLineUsage = require('command-line-usage');
 const editJsonFile = require('edit-json-file');
 const compareVersions = require('compare-versions');
 const editJsonFileOptions = {autosave: true, stringify_width: 4};
-const githubRepo = 'github.com/yahavi/artifactory-vsts-extension.git';
+const githubRepo = 'https://github.com/yahavi/artifactory-vsts-extension.git';
 const simpleGit = require('simple-git')()
     .outputHandler((command, stdout, stderr) => {
         stdout.pipe(process.stdout);
@@ -85,7 +85,7 @@ function commitAndPush() {
         simpleGit
             .commit('Bumped version to ' + commandLineArgsOptions.version, filesToCommit)
             .tag([commandLineArgsOptions.version])
-            .push(['https://' + commandLineArgsOptions.githubUsername + ':' + commandLineArgsOptions.githubPassword + '@' + githubRepo, 'master'])
+            .push([githubRepo, 'master'])
             .exec(() => { console.log('Push success'); });
     }
 }
