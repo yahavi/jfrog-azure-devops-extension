@@ -4,7 +4,8 @@ const crypto = require('crypto');
 const path = require('path');
 const request = require('request-promise-lite');
 const execSync = require('child_process').execSync;
-require('proxy-support'); // Replaces globalAgent with tunnel-agent
+const proxyingAgent = require('proxying-agent');
+const getProxyForUrl = require('proxy-from-env').getProxyForUrl;
 
 const fileName = getCliExecutableName();
 const btPackage = "jfrog-cli-" + getArchitecture();
@@ -155,6 +156,7 @@ function downloadCli(attemptNumber) {
         const cliTmpPath = encodePath(versionedCliPath + ".tmp");
 
         // Perform download
+        proxyingAgent.globalize(getProxyForUrl(jfrogCliDownloadUrl));
         request.get(jfrogCliDownloadUrl, {json: false, resolveWithFullResponse: true}).then((response) => {
             // Check valid response
             if (response.statusCode < 200 || response.statusCode >= 300) {
