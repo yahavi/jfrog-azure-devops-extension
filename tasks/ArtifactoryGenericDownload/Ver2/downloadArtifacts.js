@@ -32,7 +32,7 @@ function performArtifactSourceDownload(cliPath, workDir, artifactoryService, art
     let downloadPath = tl.getInput("downloadPath", true);
     buildName = buildName.substr(1);
 
-    let cliCommand = utils.cliJoin(cliPath, cliDownloadCommand, utils.quote("*"), utils.quote(downloadPath), "--build=" + buildName + buildNumber, "--url=" + utils.quote(artifactoryUrl), "--flat=true");
+    let cliCommand = utils.cliJoin(cliPath, cliDownloadCommand, utils.quote("*"), utils.quote(downloadPath), "--build=" + utils.quote(buildName + buildNumber), "--url=" + utils.quote(artifactoryUrl), "--flat=true");
     cliCommand = utils.addArtifactoryCredentials(cliCommand, artifactoryService);
     let taskRes = utils.executeCliCommand(cliCommand, workDir);
 
