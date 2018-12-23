@@ -29,7 +29,7 @@ function RunTaskCbk(cliPath) {
 function performArtifactSourceDownload(cliPath, workDir, artifactoryService, artifactoryUrl) {
     let buildNumber = tl.getInput("version", true);
     let buildName = tl.getInput("definition", true);
-    let downloadPath = tl.getInput("downloadPath", true);
+    let downloadPath = utils.fixWindowsPaths(tl.getInput("downloadPath", true));
     buildName = buildName.substr(1);
 
     let cliCommand = utils.cliJoin(cliPath, cliDownloadCommand, utils.quote("*"), utils.quote(downloadPath), "--build=" + utils.quote(buildName + buildNumber), "--url=" + utils.quote(artifactoryUrl), "--flat=true");
