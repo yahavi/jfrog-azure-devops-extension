@@ -1,11 +1,11 @@
+|Latest Version|
+|:---:|
+[![Visual Studio Marketplace](https://vsmarketplacebadge.apphb.com/version-short/JFrog.jfrog-artifactory-vsts-extension.svg)](https://marketplace.visualstudio.com/items?itemName=JFrog.jfrog-artifactory-vsts-extension)
+
 |Branch|Status|
 |:---:|---|
 |master|[![Build status](https://ci.appveyor.com/api/projects/status/ki6edykufqy9h5bl/branch/master?svg=true)](https://ci.appveyor.com/project/jfrog-ecosystem/artifactory-vsts-extension/branch/master)
 |dev|[![Build status](https://ci.appveyor.com/api/projects/status/ki6edykufqy9h5bl/branch/dev?svg=true)](https://ci.appveyor.com/project/jfrog-ecosystem/artifactory-vsts-extension/branch/dev)|
-
-|Latest Version|
-|:---:|
-[![Visual Studio Marketplace](https://vsmarketplacebadge.apphb.com/version-short/JFrog.jfrog-artifactory-vsts-extension.svg)](https://marketplace.visualstudio.com/items?itemName=JFrog.jfrog-artifactory-vsts-extension)
 
 # Overview 
 JFrog Artifactory provides tight integration with Azure DevOps and TFS through the **JFrog Artifactory Extension**.
