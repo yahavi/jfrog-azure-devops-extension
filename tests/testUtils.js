@@ -58,6 +58,7 @@ module.exports = {
     go: path.join(__dirname, '..', 'tasks', 'ArtifactoryGo', 'goBuild.js'),
 
     initTests: initTests,
+    recreateTestDataDir: recreateTestDataDir,
     runTask: runTask,
     getTestName: getTestName,
     getTestLocalFilesDir: getTestLocalFilesDir,
@@ -83,7 +84,6 @@ function initTests() {
     tl.setVariable('Agent.ToolsDirectory', testDataDir);
 
     cleanUpOldRepositories();
-    recreateTestDataDir();
     createTestRepositories();
 }
 

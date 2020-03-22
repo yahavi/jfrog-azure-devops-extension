@@ -26,6 +26,7 @@ describe('JFrog Artifactory Extension Tests', () => {
     });
 
     beforeEach(() => {
+        testUtils.recreateTestDataDir();
         tasksOutput = '';
     });
 
