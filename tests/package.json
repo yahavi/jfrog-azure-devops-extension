@@ -8,7 +8,7 @@
     "main": "testUtils.js",
     "dependencies": {
         "artifactory-tasks-utils": "file:../artifactory-tasks-utils/artifactory-tasks-utils-1.0.0.tgz",
-        "mocha": "^5.2.0",
+        "mocha": "^7.1.1",
         "path": "^0.12.7",
         "http-tunneling-proxy": "^0.3.4",
         "rmdir-recursive": "^0.0.1",

@@ -1,8 +1,8 @@
 [requires]
-Poco/1.9.0@pocoproject/stable
+Blaze/3.3@blaze/stable
 
 [generators]
 cmake
 
 [options]
-Poco:shared=False
+Blaze:shared=False
