@@ -1,7 +1,7 @@
 const testUtils = require('../../../testUtils');
 
 let inputs = {
-    buildName: 'npmTest',
+    buildName: 'npmInstallTest',
     buildNumber: '1'
 };
 

@@ -3,7 +3,7 @@ const testUtils = require('../../../testUtils');
 const TEST_NAME = 'npm';
 
 let inputs = {
-    buildName: 'npmTest',
+    buildName: 'npmInstallTest',
     buildNumber: '1',
     collectBuildInfo: true,
     workingFolder: 'npm',
