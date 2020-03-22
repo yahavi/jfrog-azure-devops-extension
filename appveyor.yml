@@ -24,8 +24,8 @@ environment:
 install:
 - npm i -gq jfrog-cli-go
 - npm i -gq tfx-cli
-- sh: sudo pip install -Iv conan==1.21.0
-- cmd: pip install -Iv conan==1.21.0
+- sh: sudo pip install conan==1.21.0 -q
+- cmd: pip install conan==1.21.0 -q
 - cmd: nuget update -self
 
 services:
