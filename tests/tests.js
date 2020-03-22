@@ -609,7 +609,7 @@ function runTest(description, testFunc, skip, async) {
 
     it(description, done => {
         async ? asyncTest(testFunc, done) : syncTest(testFunc, done);
-    }).timeout(300000); // 5 minutes
+    }).timeout(600000); // 10 minutes
 }
 
 /**
