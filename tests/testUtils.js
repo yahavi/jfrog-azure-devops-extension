@@ -84,6 +84,7 @@ function initTests() {
     tl.setVariable('Agent.ToolsDirectory', testDataDir);
 
     cleanUpOldRepositories();
+    recreateTestDataDir();
     createTestRepositories();
 }
 
