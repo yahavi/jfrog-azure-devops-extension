@@ -58,7 +58,6 @@ module.exports = {
     go: path.join(__dirname, '..', 'tasks', 'ArtifactoryGo', 'goBuild.js'),
 
     initTests: initTests,
-    recreateTestDataDir: recreateTestDataDir,
     runTask: runTask,
     getTestName: getTestName,
     getTestLocalFilesDir: getTestLocalFilesDir,
@@ -237,8 +236,8 @@ function cleanUpOldRepositories() {
         let repoTimestamp = parseInt(regexGroups.pop(), 10);
         // Convert unix timestamp to time
         let timeDifference = new Date(Math.floor(getCurrentTimestamp() - repoTimestamp) * 1000);
-        // If more than 2 hours have passed, delete the repository.
-        if (timeDifference.getHours() > 2) {
+        // If more than 24 hours have passed, delete the repository.
+        if (timeDifference.getHours() > 24) {
             deleteRepo(repoKey);
         }
     });
