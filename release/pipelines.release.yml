@@ -1,0 +1,92 @@
+pipelines:
+  - name: release_artifactory_azure_devops
+    configuration:
+      runtime:
+        type: image
+        image:
+          auto:
+            language: node
+            versions:
+              - "16"
+      environmentVariables:
+        readOnly:
+          NEXT_VERSION: 0.0.0
+          NEXT_DEVELOPMENT_VERSION: 0.0.x-SNAPSHOT
+
+    steps:
+      - name: Release
+        type: Bash
+        configuration:
+          inputResources:
+            - name: artifactoryAzureDevOpsReleaseGit
+          integrations:
+            - name: il_automation
+            - name: entplus_deployer
+        execution:
+          onExecute:
+            - cd $res_artifactoryAzureDevOpsReleaseGit_resourcePath
+
+            # Set env
+            - export CI=true
+            - export JFROG_BUILD_STATUS=PASS
+            - export JFROG_CLI_BUILD_NAME=ecosystem-artifactory-azure-devops-release
+            - export JFROG_CLI_BUILD_NUMBER=$run_number
+            - export JFROG_CLI_BUILD_PROJECT=ecosys
+
+            # Configure git
+            - git checkout main
+            - git remote set-url origin https://$int_il_automation_token@github.com/jfrog/artifactory-azure-devops-extension.git
+
+            # Make sure versions provided
+            - echo "Checking variables"
+            - test -n "$NEXT_VERSION" -a "$NEXT_VERSION" != "0.0.0"
+            - test -n "$NEXT_DEVELOPMENT_VERSION" -a "$NEXT_DEVELOPMENT_VERSION" != "0.0.x-SNAPSHOT"
+
+            # Configure JFrog CLI
+            - curl -fL https://getcli.jfrog.io/v2-jf | sh && chmod +x jf
+            - ./jf c rm --quiet
+            - ./jf c add internal --artifactory-url=$int_entplus_deployer_url --user=$int_entplus_deployer_user --password=$int_entplus_deployer_apikey
+            - ./jf npmc --repo-resolve ecosys-npm-remote --repo-deploy ecosys-npm-local
+
+            # Run audit
+            - >
+              env -i PATH=$PATH HOME=$HOME
+              JFROG_CLI_BUILD_NAME=$JFROG_CLI_BUILD_NAME
+              JFROG_CLI_BUILD_NUMBER=$JFROG_CLI_BUILD_NUMBER
+              JFROG_CLI_BUILD_PROJECT=$JFROG_CLI_BUILD_PROJECT
+              ./jf npm i
+            - ./jf an --project $JFROG_CLI_BUILD_PROJECT
+            # Bumb version
+            - git merge origin/dev
+            - npm i --prefix=buildScripts
+            - node buildScripts/bump-version.js -v ${NEXT_VERSION}
+
+            # Create extension
+            - npm i --unsafe-perm
+            - npm run create
+
+            # Verify vsix file is larger than 15M
+            - find . -iname "JFrog.jfrog-artifactory-vsts-extension*" -size +15M | grep .
+
+            # Commit release version
+            - git commit -am "[artifactory-release] Release version ${NEXT_VERSION} [skipRun]" --allow-empty
+            - git tag ${NEXT_VERSION}
+            - git push
+            - git push --tags
+
+            # Run install and publish build
+            - >
+              env -i PATH=$PATH HOME=$HOME
+              JFROG_CLI_BUILD_NAME=$JFROG_CLI_BUILD_NAME
+              JFROG_CLI_BUILD_NUMBER=$JFROG_CLI_BUILD_NUMBER
+              JFROG_CLI_BUILD_PROJECT=$JFROG_CLI_BUILD_PROJECT
+              ./jf npm i
+            - ./jf rt bag && ./jf rt bce
+            - ./jf rt bp
+
+            # Distribute release bundle
+            # - ./jf ds rbc artifactory-azure-devops $NEXT_VERSION --spec=./release/specs/prod-rbc-filespec.json --spec-vars="version=$NEXT_VERSION" --sign
+            # - ./jf ds rbd artifactory-azure-devops $NEXT_VERSION --site="releases.jfrog.io" --sync
+
+            # Publish extension
+            - npx tfx extension publish -t ${ADO_PUBLISHER_API_KEY}

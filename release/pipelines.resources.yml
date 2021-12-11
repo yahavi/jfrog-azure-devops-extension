@@ -1,0 +1,20 @@
+resources:
+  - name: artifactoryAzureDevOpsSnapshotGit
+    type: GitRepo
+    configuration:
+      path: yahavi/artifactory-azure-devops-extension
+      gitProvider: il_automation
+      buildOn:
+        pullRequestCreate: true
+      branches:
+        include: main
+      cancelPendingRunsOn:
+        pullRequestUpdate: true
+
+  - name: artifactoryAzureDevOpsReleaseGit
+    type: GitRepo
+    configuration:
+      path: yahavi/artifactory-azure-devops-extension
+      gitProvider: il_automation
+      buildOn:
+        commit: false

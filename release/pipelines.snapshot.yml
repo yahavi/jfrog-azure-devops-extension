@@ -1,0 +1,55 @@
+pipelines:
+  - name: build_artifactory_azure_devops_snapshot
+    configuration:
+      runtime:
+        type: image
+        image:
+          auto:
+            language: node
+            versions:
+              - "16"
+
+    steps:
+      - name: Snapshot
+        type: Bash
+        configuration:
+          inputResources:
+            - name: artifactoryAzureDevOpsSnapshotGit
+          integrations:
+            - name: entplus_deployer
+            - name: ecosys_azure
+        execution:
+          onExecute:
+            - cd $res_artifactoryAzureDevOpsSnapshotGit_resourcePath
+
+            # Set env
+            - export CI=true
+            - export JFROG_BUILD_STATUS=PASS
+            - export JFROG_CLI_BUILD_NAME=ecosystem-artifactory-azure-devops-dev
+            - export JFROG_CLI_BUILD_NUMBER=$run_number
+            - export JFROG_CLI_BUILD_PROJECT=ecosys
+
+            # Configure JFrog CLI
+            - curl -fL https://getcli.jfrog.io/v2-jf | sh && chmod +x jf
+            - ./jf c rm --quiet
+            - ./jf c add internal --artifactory-url=$int_entplus_deployer_url --user=$int_entplus_deployer_user --password=$int_entplus_deployer_apikey
+            - ./jf npmc --repo-resolve ecosys-npm-remote --repo-deploy ecosys-npm-local
+
+            # Run audit
+            - >
+              env -i PATH=$PATH HOME=$HOME
+              JFROG_CLI_BUILD_NAME=$JFROG_CLI_BUILD_NAME
+              JFROG_CLI_BUILD_NUMBER=$JFROG_CLI_BUILD_NUMBER
+              JFROG_CLI_BUILD_PROJECT=$JFROG_CLI_BUILD_PROJECT
+              ./jf npm i
+            - ./jf an --project $JFROG_CLI_BUILD_PROJECT
+            # Publish build info
+            - ./jf rt bag && ./jf rt bce
+            - ./jf rt bp
+
+            # Prepare staging environment
+            - >
+              env -i PATH=$PATH HOME=$HOME
+              ADO_ARTIFACTORY_DEVELOPER=$int_ecosys_azure_developer
+              ADO_ARTIFACTORY_API_KEY=$int_ecosys_azure_apikey
+              npm run publish-private
