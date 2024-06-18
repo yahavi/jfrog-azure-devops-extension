@@ -39,17 +39,26 @@
             },
             "options": {
                 "restore": "restore",
-                "push": "NuGet push"
+                "push": "NuGet push",
+                "custom": "custom"
             }
+        },
+        {
+            "name": "customCommand",
+            "type": "string",
+            "label": "Custom command",
+            "helpMarkDown": "The custom command which will be passed to .NET Core CLI for execution (for example: 'pack'). Note that commands that require deployment are not supported, and that build-info collection is not available for custom commands.",
+            "required": true,
+            "visibleRule": "command=custom"
         },
         {
             "name": "arguments",
             "type": "string",
             "label": "Arguments",
             "defaultValue": "",
-            "helpMarkDown": "The arguments which will be passed to .NET Core CLI for execution. Arguments should be quoted, and space separated.",
+            "helpMarkDown": "The arguments which will be passed to .NET Core CLI for execution (for example: '--no-restore' '--v:d'). Arguments should be quoted, and space separated.",
             "required": false,
-            "visibleRule": "command = restore"
+            "visibleRule": "command=restore || command=custom"
         },
         {
             "name": "artifactoryConnection",
@@ -65,7 +74,7 @@
             "label": "Resolution repository",
             "defaultValue": "",
             "required": true,
-            "visibleRule": "command = restore",
+            "visibleRule": "command=restore || command=custom",
             "helpMarkDown": "Sets the resolution repository.",
             "properties": {
                 "EditableOptions": "True"
@@ -99,7 +108,7 @@
             "defaultValue": "**/*.sln",
             "helpMarkDown": "Path to the root directory of a solution/project file to use. If the directory includes more than one sln files, then the first argument passed in the Arguments field should be the name (not the path) of the sln file. Accepts Ant-style patterns.",
             "required": "true",
-            "visibleRule": "command = restore"
+            "visibleRule": "command=restore || command=custom"
         },
         {
             "name": "pathToNupkg",
@@ -150,6 +159,7 @@
             "label": "Collect build info",
             "defaultValue": "false",
             "required": false,
+            "visibleRule": "command=restore || command=push",
             "helpMarkDown": "Select to collect build info."
         },
         {
@@ -194,7 +204,7 @@
             "label": "NuGet protocol version",
             "required": false,
             "defaultValue": "v3",
-            "visibleRule": "command = restore",
+            "visibleRule": "command=restore || command=custom",
             "options": {
                 "v2": "v2",
                 "v3": "v3"

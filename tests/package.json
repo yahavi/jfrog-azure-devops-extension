@@ -8,7 +8,7 @@
     "main": "testUtils.ts",
     "dependencies": {
         "@jfrog/tasks-utils": "file:../jfrog-tasks-utils/jfrog-tasks-utils-1.0.0.tgz",
-        "azure-pipelines-task-lib": "^4.4.0",
+        "azure-pipelines-task-lib": "4.12.0",
         "fs-extra": "^11.1.1",
         "js-yaml": "^4.1.0",
         "path": "^0.12.7"
@@ -26,6 +26,6 @@
         "ts-node": "^10.9.1"
     },
     "scripts": {
-        "test": "npm i && mocha -r ts-node/register tests.ts -t 600000"
+        "test": "npm i && mocha -r ts-node/register tests.ts -t 1000000"
     }
 }

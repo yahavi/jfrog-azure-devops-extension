@@ -17,10 +17,17 @@ function RunTaskCbk(cliPath) {
         case 'push':
             performDotnetNugetPush(cliPath);
             break;
+        case 'custom':
+            performDotnetCustomCommand(cliPath);
+            break;
     }
 }
 
 function performDotnetRestore(cliPath) {
+    performDotnetCommand(cliPath, cliDotnetCoreRestoreCommand);
+}
+
+function performDotnetCommand(cliPath, commandName) {
     let sourcesPattern = tl.getInput('rootPath');
     let filesList = solutionPathUtil.resolveFilterSpec(sourcesPattern, tl.getVariable('System.DefaultWorkingDirectory') || process.cwd());
     // A source file is a solution or csproj file.
@@ -33,9 +40,14 @@ function performDotnetRestore(cliPath) {
         }
         let resolverServerId = performDotnetConfig(cliPath, sourcePath, 'targetResolveRepo');
         let dotnetArguments = buildDotnetCliArgs();
-        let dotnetCommand = utils.cliJoin(cliPath, cliDotnetCoreRestoreCommand, dotnetArguments);
+        let dotnetCommand = utils.cliJoin(cliPath, commandName, dotnetArguments);
         executeCliCommand(dotnetCommand, sourcePath, cliPath, [resolverServerId]);
     });
+}
+
+function performDotnetCustomCommand(cliPath) {
+    let customCommand = tl.getInput('customCommand');
+    performDotnetCommand(cliPath, 'dotnet ' + customCommand);
 }
 
 function performDotnetNugetPush(cliPath) {

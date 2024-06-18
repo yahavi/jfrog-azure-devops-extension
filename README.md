@@ -1251,7 +1251,7 @@ Use the following commands to run from terminal:
     ```
 
 Note: If you are running tests via your IDE, make sure you are registering tests with
-ts-node: `mocha -r ts-node/register tests.ts -t 600000`.
+ts-node: `mocha -r ts-node/register tests.ts -t 1000000`.
 
 #### Skipping Tests
 

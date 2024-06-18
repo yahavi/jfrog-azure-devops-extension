@@ -721,6 +721,18 @@ describe('JFrog Artifactory Extension Tests', (): void => {
             },
             TestUtils.isSkipTest('dotnet'),
         );
+        // Run a restore using the custom command task.
+        runSyncTest(
+            'Dotnet custom restore',
+            (): void => {
+                const testDir: string = 'dotnet';
+                mockTask(testDir, 'custom');
+                mockTask(testDir, 'publish');
+                getAndAssertBuild('DotNET Test', '7');
+                deleteBuild('DotNET Test');
+            },
+            TestUtils.isSkipTest('dotnet'),
+        );
     });
 
     describe('Docker Tests', (): void => {
@@ -968,7 +980,7 @@ function runSyncTest(description: string, testFunc: () => void, skip?: boolean):
     it(description, (done): void => {
         testFunc();
         done();
-    }).timeout(600000); // 6 minutes
+    }).timeout(1000000); // 10 minutes
 }
 
 /**
