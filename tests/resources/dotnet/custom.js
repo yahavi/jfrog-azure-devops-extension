@@ -8,7 +8,7 @@ let inputs = {
     arguments: '"--build-name=DotNET Test" "--build-number=7"',
     rootPath: join(testUtils.getLocalTestDir(TEST_NAME)),
     targetResolveRepo: testUtils.getRepoKeys().nugetVirtualRepo,
-    nugetProtocolVersion: "v3"
+    nugetProtocolVersion: 'v3',
 };
 
 testUtils.copyTestFilesToTestWorkDir(TEST_NAME, 'restore');
