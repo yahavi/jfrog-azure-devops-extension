@@ -393,7 +393,10 @@
         }
     ],
     "execution": {
-        "Node16": {
+        "Node10": {
+            "target": "runGenericArtifacts.js"
+        },
+        "Node20_1": {
             "target": "runGenericArtifacts.js"
         }
     }
