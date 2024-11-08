@@ -22,13 +22,28 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
+      - name: Containerize Artifactory
+        run: ./start.sh
+        working-directory: tests/resources/docker/artifactory
+        env:
+          RTLIC: ${{secrets.RTLIC}}
+
       - name: Install
         run: npm install --no-fund
+
+      - name: Wait for Artifactory to finish loading
+        uses: nev7n/wait_for_response@v1
+        with:
+          url: "http://localhost:8082"
+          responseCode: 200
+          timeout: 600000
+          interval: 500
 
       - name: Run tests
         run: npm t
         env:
-          ADO_JFROG_PLATFORM_URL: ${{ secrets.PLATFORM_URL }}
-          ADO_JFROG_PLATFORM_ACCESS_TOKEN: ${{ secrets.PLATFORM_ADMIN_TOKEN }}
-          ADO_JFROG_PLATFORM_DOCKER_DOMAIN: ${{ secrets.CONTAINER_REGISTRY }}
+          ADO_JFROG_PLATFORM_URL: http://localhost:8082
+          ADO_JFROG_PLATFORM_USERNAME: admin
+          ADO_JFROG_PLATFORM_PASSWORD: password
+          ADO_JFROG_PLATFORM_DOCKER_DOMAIN: 127.0.0.1:8082
           ADO_SKIP_TESTS: unit,proxy,generic,installer,npm,maven,gradle,conan,nuget,dotnet,go,pip,distribution
